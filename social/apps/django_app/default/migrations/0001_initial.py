@@ -8,14 +8,22 @@ import social.storage.django_orm
 from social.utils import setting_name
 
 user_model = getattr(settings, setting_name('USER_MODEL'), None) or \
-             getattr(settings, 'AUTH_USER_MODEL', None) or \
-             'auth.User'
+            getattr(settings, 'AUTH_USER_MODEL', None) or \
+            'auth.User'
+
+migration = getattr(settings, setting_name('USER_MIGRATION'), None)
+
+if migration is not None:
+    dependency = migration
+else:
+
+    dependency = migrations.swappable_dependency(user_model)
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(user_model),
+        dependency,
     ]
 
     operations = [
